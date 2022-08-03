@@ -49,7 +49,7 @@ public class Server {
             // server = new ServerSocket(PORT, 100, InetAddress.getByName("192.168.1.157"));
             Socket client = null;
             log("\nServer started and listens on IP -> "
-                    + server.getInetAddress().toString().replace("[/]", "")
+                    + server.getInetAddress().toString()
                     + " and PORT -> "
                     + server.getLocalPort() + "\n");
             while (true) {
@@ -236,7 +236,7 @@ class ClientConnectionThread implements Runnable {
 
                     String map = Server.get_map(line);
 
-                    Server.log("Sending map -> " + map + " To -> " + client_name);
+                    Server.log("Sending map -> \n" + map.replaceAll("\\|", "\n") + "To -> " + client_name);
                     out.println(map);
                     out.flush();
 
