@@ -19,7 +19,7 @@ public class Server {
     private static final int PORT = 4000;
     public static int clients_connected = 0;
     public static String path_to_maps = "";
-    public static StringBuilder server_log = new StringBuilder();
+    // public static StringBuilder server_log = new StringBuilder();
     public static ExecutorService executor_service = Executors.newCachedThreadPool();
     public static ArrayList<String> maps = new ArrayList<>();
     public static String maps_str = "";
@@ -214,7 +214,6 @@ class ClientConnectionThread implements Runnable {
         this.client_name = client_name;
         this.socket = socket;
         Server.executor_service.execute(this);
-
     }
 
     @Override
