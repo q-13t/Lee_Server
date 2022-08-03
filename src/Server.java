@@ -45,7 +45,8 @@ public class Server {
             }
 
             // server = new ServerSocket(PORT, 100, InetAddress.getLocalHost());
-            server = new ServerSocket(PORT, 100, InetAddress.getByName("192.168.1.157"));
+            server = new ServerSocket(PORT, 100, InetAddress.getLocalHost());
+            // server = new ServerSocket(PORT, 100, InetAddress.getByName("192.168.1.157"));
             Socket client = null;
             log("\nServer started and listens on IP -> "
                     + server.getInetAddress().toString().replace("[/]", "")
@@ -274,9 +275,7 @@ class ClientConnectionThread implements Runnable {
                 e.printStackTrace();
             }
         }
-
     }
-
 }
 // 1 - сервер висилає перелік карт
 // 2 - кліент вибирає карту -> запит до сервера
