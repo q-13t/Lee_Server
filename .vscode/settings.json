@@ -1,7 +1,17 @@
 {
-    "java.project.sourcePaths": ["src"],
+    "java.project.sourcePaths": [
+        "src"
+    ],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
         "lib/**/*.jar"
+    ],
+    "cSpell.words": [
+        "linkplain",
+        "println"
+    ],
+    "cSpell.enableFiletypes": [
+        "markdown-math",
+        "markdown_latex_combined"
     ]
 }

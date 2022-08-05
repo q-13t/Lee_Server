@@ -1,3 +1,5 @@
+
+/**imports */
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,19 +16,36 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Listens for connection for Application {@code Lee} on android.
+ * </p>
+ * Expects to receive {@linkplain Server#path_to_maps path} to map/folder with
+ * maps
+ * 
+ * @author Volodymyr Davybida
+ * 
+ */
 public class Server {
     private static ServerSocket server = null;
     private static final int PORT = 4000;
     public static int clients_connected = 0;
     public static String path_to_maps = "";
-    // public static StringBuilder server_log = new StringBuilder();
     public static ExecutorService executor_service = Executors.newCachedThreadPool();
     public static ArrayList<String> maps = new ArrayList<>();
     public static String maps_str = "";
     private static boolean found = false;
 
-    public static void main(String[] args) throws Exception {
+    /**
+     * Main function that creates and listens on {@linkplain Server#server
+     * ServerSocket}, awaiting for
+     * clients to connect
+     * 
+     * @param args path to directory with maps eg. E://maps or E:/maps
+     * @throws Exception god i hope nothing
+     */
+    public static void main(String[] args) {
         try {
+
             if (args.length != 1) {
                 System.out.println("YOU NEED TO SPECIFY PATH TO MAPS!");
                 Thread.sleep(3000);
@@ -44,9 +63,8 @@ public class Server {
                 log(string);
             }
 
-            // server = new ServerSocket(PORT, 100, InetAddress.getLocalHost());
             server = new ServerSocket(PORT, 100, InetAddress.getLocalHost());
-            // server = new ServerSocket(PORT, 100, InetAddress.getByName("192.168.1.157"));
+
             Socket client = null;
             log("\nServer started and listens on IP -> "
                     + server.getInetAddress().toString()
@@ -63,17 +81,25 @@ public class Server {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            server.close();
+            try {
+                server.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
+    /**
+     * Checks wether provided {@linkplain Server#path_to_maps path} is directory or
+     * map itself.
+     */
     private static void check_dir() {
         try {
             File file = new File(path_to_maps);
             if (file.isDirectory()) {
                 check_files(false);
             } else {
-                if (!file.getName().matches("s_map_..txt")) {
+                if (!file.getName().matches("s_map_.+.txt")) {
                     System.out.println("Path specified does not lead to map!");
                     Thread.sleep(3000);
                     System.exit(1);
@@ -86,12 +112,17 @@ public class Server {
         }
     }
 
+    /**
+     * Using provided {@linkplain Server#path_to_maps path} checks wether specified
+     * directory has maps in it.
+     * If so memorizes them, else ends program notifying user.
+     */
     private static void check_files(boolean contains) {
         if (contains) {
             try {
                 Path path = Paths.get(path_to_maps);
                 Files.walk(path).forEach(x -> {
-                    if (x.toFile().getName().matches("s_map_..txt")) {
+                    if (x.toFile().getName().matches("s_map_.+.txt")) {
                         maps.add(x.toFile().getName());
                         maps_str += x.toFile().getName() + "|";
                     }
@@ -123,11 +154,22 @@ public class Server {
 
     }
 
+    /**
+     * Prints log for server
+     * 
+     * @param msg to be displayed
+     */
     public static void log(String msg) {
+        System.out.println();
         System.out.println(msg);
-        // server_log.append(msg);
     }
 
+    /**
+     * Returns requested by {@linkplain ClientConnectionThread#socket client} map.
+     * 
+     * @param map_name
+     * @return map in string line
+     */
     public static String get_map(String map_name) {
         File map = new File(path_to_maps, map_name);
         String line = "";
@@ -142,15 +184,21 @@ public class Server {
 
             }
             br.close();
-        } catch (
-
-        IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        // maps_str.replaceAll("\n", "|");
         return place_points(map_str_2, X, Y);
     }
 
+    /**
+     * Places randomly points {@code @ (player)} and {@code $ (goal)} at provided
+     * map
+     * 
+     * @param map points to be placed in
+     * @param x   dimensions
+     * @param y   dimensions
+     * @return modified map with points
+     */
     private static String place_points(String map, int x, int y) {
 
         String[] maps_splitted = map.split("\\|");
@@ -175,7 +223,6 @@ public class Server {
             int x_2 = (int) (Math.random() * x);
             int y_2 = (int) (Math.random() * y);
             if (x_1 != x_2 && y_1 != y_2) {
-                // System.out.println("NOT SAME -> " + (x_1 != x_2 && y_1 != y_2));
                 if (map_in_chars[x_1][y_1] != ' ') {
                     contains_player = true;
                 }
@@ -189,9 +236,8 @@ public class Server {
                     map_in_chars[x_2][y_2] = '$';
                 }
 
-                // System.out.println(x_1 + " " + y_1 + " " + x_2 + " " + y_2 + " ");
             }
-            // System.out.println("END -> " + (!contains_player || !contains_goal));
+
         } while (!contains_player || !contains_goal);
 
         String out_str = "";
@@ -206,6 +252,12 @@ public class Server {
     }
 }
 
+/**
+ * Handles User requests until they disconnect
+ * 
+ * @author Volodymyr Davybida
+ * @see java.lang.Runnable
+ */
 class ClientConnectionThread implements Runnable {
     private Socket socket = null;
     private String client_name = "";
@@ -221,17 +273,15 @@ class ClientConnectionThread implements Runnable {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            // ////////////////// ////////////////
             Server.log("Sending list of maps to " + client_name);
             out.println(Server.maps_str);
             out.flush();
             String line = "";
-            while (true) {
-
+            while (socket.isConnected()) {
                 line = in.readLine();
 
                 Server.log(client_name + " request -> " + line);
-                if (!line.equals("DISCONNECT")) {
+                if (!line.equals("DISCONNECT") && line.contains("s_map")) {
 
                     String map = Server.get_map(line);
 
@@ -239,35 +289,21 @@ class ClientConnectionThread implements Runnable {
                     out.println(map);
                     out.flush();
 
-                    // line = in.readLine();
-                    // Server.log(client_name + " solved map -> " + line);
+                    line = in.readLine();
+                    Server.log(client_name + " response -> " + line);
 
-                } else {
+                } else if (line.equals("DISCONNECT")) {
                     break;
                 }
-
-                // try {
-                // Thread.sleep(100);
-                // } catch (Exception e) {
-                // // TODO: handle exception
-                // }
             }
 
-            // String line = in.readLine();
-            // line.replaceAll(" ", "|");
-            // System.out.println(line);
-            // out.write(line);
-            // out.flush();
-            // out.close();
-            ////////////////// ////////////////
-            Server.clients_connected--;
         } catch (NullPointerException n) {
             Server.log(client_name + " did a BRUH moment!");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                // Server.clients_connected--;
+                Server.clients_connected--;
                 socket.close();
                 Server.log(client_name + " disconnected!");
             } catch (IOException e) {
@@ -276,10 +312,3 @@ class ClientConnectionThread implements Runnable {
         }
     }
 }
-// 1 - сервер висилає перелік карт
-// 2 - кліент вибирає карту -> запит до сервера
-// 3 - сервер шукажє карку
-// 4 - сервер рандомізує точки на карті
-// 5 - сервер відправляє карту клієнту
-// 6 - клієнт розв'язує карту
-// 7 - клієнт відправляє розв'язану карту серверу
