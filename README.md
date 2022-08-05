@@ -14,7 +14,7 @@ This is the main function that requirers path to maps to be provided to run the 
 
 Path can look like eg. E:\maps
 
-To launch the app you can your IDE or command prompt. To launch from IDE you'll need to provide path in args provided in arguments for app. If you are launching app from command prompt you can start it like: **java -cp . Server E:\maps**
+To launch the app you can use your IDE or command prompt. To launch from IDE you'll need to provide path in args of your IDE provided in arguments for app. If you are launching app from command prompt you can start it like: **java -cp . Server E:\maps**
 
 In this function firstly will be checked path provided to the app using [check dir](#check-dir) function. If no path was specified the app will inform user and stop after 3 seconds. Nextly ServerSocket will be created, it will listen on your localhost IP and PORT (port can be changed default is 4000). After that Server will start listening for any connections **ENDLESSLY** until it is stope in IDE or command prompt is closed.
 
@@ -68,10 +68,10 @@ Worth noticing that maps should be X by Y dimensions (no line should be longer o
 
 They can look like:
 
-++++++    </p>
-++++++  ++</p>
-    +   ++</p>
-++++++++++</p>
+++++++    `</p>`
+++++++  ++`</p>`
+    +   ++`</p>`
+++++++++++`</p>`
 
 And in program itself it will look like:
 
