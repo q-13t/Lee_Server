@@ -1,6 +1,6 @@
 # Lee Server
 
-For any sane person I'd suggest NOT reading README if you don't want to see amateur documentation.
+For any sane person I'd suggest NOT to read README if you don't want to see amateur documentation.
 
 In any case. Welcome to land of nonsense.
 
