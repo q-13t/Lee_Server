@@ -68,10 +68,10 @@ Worth noticing that maps should be X by Y dimensions (no line should be longer o
 
 They can look like:
 
-++++++
-++++++  ++
-    +   ++
-++++++++++
+++++++    </p>
+++++++  ++</p>
+    +   ++</p>
+++++++++++</p>
 
 And in program itself it will look like:
 
